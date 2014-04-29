@@ -37,6 +37,8 @@ def line_to_tweet(stream):
     lines = f.readlines()
     line_num = randint(0, len(lines)-1)
     line = lines[line_num]
+    if len(line) > 137:
+        line = line[0:133] + '...'
     line = line + ' \\' + stream[0]
     print 'line: ', line
     return line
@@ -47,9 +49,9 @@ def post(line):
     api = twitter.Api(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, access_token_key, access_token_secret)
     # Post the tweet.
     try:
-    	#print 'will now verify'
-    	#api.VerifyCredentials()
-    	#print 'will now post'
+        #print 'will now verify'
+        #api.VerifyCredentials()
+        #print 'will now post'
         api.PostUpdate(line)
         pass
     except twitter.TwitterError, e:

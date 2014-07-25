@@ -53,17 +53,20 @@ def trim_results(results): # reduce down to tweets that can work, and strip each
         len_result = len(result['_text'])
         pos_match = result['_text'].lower().find(search_text.lower())
         result['_text'] = result['_text'][0:pos_match-1]
+        #print 'stripped result: ', result['_text']
+        if len(result['_text']) < 10: continue
         if result['_text'][-1] == '#':
             result['_text'] = result['_text'][0:-1]
         # strip any URLs
         url_patt = 'http:[^ ]+'
         result['_text'] = re.sub(url_patt,'', result['_text'])
         result['_text'] = result['_text'].strip()
+        if len(result['_text']) < 10: continue
         if result['_text'][-1] not in ['.', '!', '?']:
             result['_text'] = result['_text'] + '.'
         if 10 < len(result['_text']) < 80:
             #print '*** ', result['_text']
-            print result
+            #print str(result['_text']), result['_id']
             net_results.append(result)
     print 'num net results: ', len(net_results)
     return net_results
@@ -97,7 +100,11 @@ def post(line, reply_to=None): # post tweet
         #print 'will now verify'
         #api.VerifyCredentials()
         #print 'will now post'
-        api.PostUpdate(line, in_reply_to_status_id=reply_to)
+        import random
+        if random.random() < chance_of_using_reply:
+            api.PostUpdate(line, reply_to)
+        else:
+            api.PostUpdate(line)
         pass
     except twitter.TwitterError, e:
         if e.message != "Status is a duplicate.":
@@ -106,6 +113,7 @@ def post(line, reply_to=None): # post tweet
 if __name__ == "__main__":
     script_directory = 'firstWorldStoic'
     search_text = 'firstworldproblem'
+    chance_of_using_reply = 0.1
     directory = os.path.join('/Users/billseitz/documents/djcode/st/sycorax', script_directory)
     config = load_config(directory)
     results = search(search_text)
@@ -113,5 +121,5 @@ if __name__ == "__main__":
     result = pick_result(results)
     quote = pick_quote(result)
     tweet = merge_pieces(result, quote)
-    print tweet
+    #print str(tweet)
     post(tweet, result["_id"])

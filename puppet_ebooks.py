@@ -59,10 +59,10 @@ def list_timeline(list): # get the timeline for the selected list
 
 def corpus_assemble(timeline): # assemble trimmed lines of tweets to feed to engine
     import re, random
-    if random.random() < .001:
-    	keep_handle = True
-    else:
-    	keep_handle = False
+    #if random.random() < .001:
+    #	keep_handle = True
+    #else:
+    keep_handle = False
     url_patt = 'http:[^ ]+'
     tweets = []
     for tweet in timeline:
@@ -70,7 +70,7 @@ def corpus_assemble(timeline): # assemble trimmed lines of tweets to feed to eng
         body = re.sub(url_patt,'', body)
         body = body.replace('|', '')
         body = body.replace('"', '')
-        if keep_handle:
+        if not(keep_handle):
             body = body.replace('@', '#')
         #print 'body: ', body
         tweets.append(body)
